@@ -10,7 +10,7 @@ services:
       - WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}
       - WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}
       - WORDPRESS_DB_NAME=wordpress
-      - WORDPRESS_CONFIG_EXTRA=define('WP_HOME', '${WP_SITE_URL:-https://mpanel.hostinlink.com}'); define('WP_SITEURL', '${WP_SITE_URL:-https://mpanel.hostinlink.com}');
+      - WORDPRESS_CONFIG_EXTRA=define('WP_HOME', '${WP_SITE_URL:-https://wspanel.hostinlink.com}'); define('WP_SITEURL', '${WP_SITE_URL:-https://wspanel.hostinlink.com}');
     depends_on:
       - mysql
     healthcheck:
