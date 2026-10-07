@@ -7,15 +7,19 @@ services:
       - 'wordpress-files:/var/www/html'
     environment:
       - WORDPRESS_DB_HOST=mysql
-      - WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}
-      - WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}
+      - 'WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}'
+      - 'WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
       - WORDPRESS_DB_NAME=wordpress
-      - WORDPRESS_HOME=${WP_SITE_URL:-https://client-default.hostinlink.com}
-      - WORDPRESS_SITEURL=${WP_SITE_URL:-https://client-default.hostinlink.com}
+      - 'WORDPRESS_HOME=${WP_SITE_URL:-https://hostinlink.com}'
+      - 'WORDPRESS_SITEURL=${WP_SITE_URL:-https://hostinlink.com}'
     depends_on:
       - mysql
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1"]
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://127.0.0.1'
       interval: 2s
       timeout: 10s
       retries: 10
@@ -26,18 +30,27 @@ services:
           memory: 2048M
         reservations:
           memory: 512M
+    # 🔌 Enganchamos WordPress a ambas redes
+    networks:
+      - default
+      - bunker-coolify
 
   mysql:
     image: 'mysql:8'
     volumes:
       - 'mysql-data:/var/lib/mysql'
     environment:
-      - MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}
+      - 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
       - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=${WP_DB_USER:-wp_default_user}
-      - MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}
+      - 'MYSQL_USER=${WP_DB_USER:-wp_default_user}'
+      - 'MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-h'
+        - 127.0.0.1
       interval: 5s
       timeout: 20s
       retries: 10
@@ -48,7 +61,100 @@ services:
           memory: 1024M
         reservations:
           memory: 256M
+    # 🚨 LA JUGADA MAESTRA: Metemos la base de datos al túnel interno de Coolify
+    networks:
+      - default
+      - bunker-coolify
 
 volumes:
-  wordpress-files:
-  mysql-data:
+  wordpress-files: null
+  mysql-data: null
+
+# =========================================================================
+# 🧠 ENLACE DE REDES EXTERNAS (CONEXIÓN ADUANA INFRAESTRUCTURA)
+# =========================================================================
+networks:
+  default:
+  bunker-coolify:
+    name: coolify # 🔑 ID EXACTO: El nombre de la red de Docker que descubriste en tu foto
+    external: true # Le dice a Docker Compose que no cree una red, sino que use la global existente
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#version: '3.8'
+
+#services:
+#  wordpress:
+#    image: 'wordpress:latest'
+#    volumes:
+#      - 'wordpress-files:/var/www/html'
+#    environment:
+#      - WORDPRESS_DB_HOST=mysql
+#      - WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}
+#      - WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}
+#      - WORDPRESS_DB_NAME=wordpress
+#      - WORDPRESS_HOME=${WP_SITE_URL:-https://client-default.hostinlink.com}
+#      - WORDPRESS_SITEURL=${WP_SITE_URL:-https://client-default.hostinlink.com}
+#    depends_on:
+#      - mysql
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://127.0.0.1"]
+#      interval: 2s
+#      timeout: 10s
+#      retries: 10
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.70'
+#          memory: 2048M
+#        reservations:
+#          memory: 512M
+
+#  mysql:
+#    image: 'mysql:8'
+#    volumes:
+#      - 'mysql-data:/var/lib/mysql'
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}
+#      - MYSQL_DATABASE=wordpress
+#      - MYSQL_USER=${WP_DB_USER:-wp_default_user}
+#      - MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}
+#    healthcheck:
+#      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+#      interval: 5s
+#      timeout: 20s
+#      retries: 10
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.30'
+#          memory: 1024M
+#        reservations:
+#          memory: 256M
+
+#volumes:
+#  wordpress-files:
+#  mysql-data:
