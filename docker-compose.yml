@@ -3,40 +3,65 @@ version: '3.8'
 services:
   wordpress:
     image: 'wordpress:latest'
-    container_name: 'wp-cliente-git' # Fijo para evitar problemas de DNS interno
     volumes:
       - 'wordpress-files:/var/www/html'
     environment:
-      - WORDPRESS_DB_HOST=mysql-cliente-git
-      - WORDPRESS_DB_USER=Hola123
-      - WORDPRESS_DB_PASSWORD=Hola123
+      - WORDPRESS_DB_HOST=mysql
+      - 'WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}'
+      - 'WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_HOME=${WP_SITE_URL:-https://client-default.hostinlink.com}
       - WORDPRESS_SITEURL=${WP_SITE_URL:-https://client-default.hostinlink.com}
     depends_on:
       - mysql
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://127.0.0.1'
+      interval: 2s
+      timeout: 10s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '0.70'
+          memory: 2048M
+        reservations:
+          memory: 512M
+    # 🔌 Enganchamos WordPress a ambas redes
     networks:
       - default
       - bunker-coolify
-    # 🎯 AQUÍ ESTÁ LO QUE FALTA: Le decimos manualmente a Traefik cómo exponer WordPress
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wp-cliente-router.rule=Host(`wildo.hostinlink.com`)" # Reemplaza con el dominio real
-      - "traefik.http.routers.wp-cliente-router.entrypoints=websecure"
-      - "traefik.http.routers.wp-cliente-router.tls=true"
-      - "traefik.http.routers.wp-cliente-router.tls.certresolver=letsencrypt" # O el resolver de Coolify
-      - "traefik.http.services.wp-cliente-service.loadbalancer.server.port=80" # Puerto interno de WP
 
   mysql:
     image: 'mysql:8'
-    container_name: 'mysql-cliente-git' # 🔑 ¡CRUCIAL! Nombre único y fijo para phpMyAdmin
     volumes:
       - 'mysql-data:/var/lib/mysql'
     environment:
-      - MYSQL_ROOT_PASSWORD=Hola123
+      - 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
       - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=Hola123
-      - MYSQL_PASSWORD=Hola123
+      - 'MYSQL_USER=${WP_DB_USER:-wp_default_user}'
+      - 'MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - '-h'
+        - 127.0.0.1
+      interval: 5s
+      timeout: 20s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '0.30'
+          memory: 1024M
+        reservations:
+          memory: 256M
+    # 🚨 LA JUGADA MAESTRA: Metemos la base de datos al túnel interno de Coolify
     networks:
       - default
       - bunker-coolify
@@ -45,108 +70,14 @@ volumes:
   wordpress-files: null
   mysql-data: null
 
-networks:
-  default:
-  bunker-coolify:
-    name: coolify
-    external: true
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#version: '3.8'
-
-#services:
-#  wordpress:
-#    image: 'wordpress:latest'
-#    volumes:
-#      - 'wordpress-files:/var/www/html'
-#    environment:
-#      - WORDPRESS_DB_HOST=mysql
-#      - 'WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}'
-#      - 'WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
-#      - WORDPRESS_DB_NAME=wordpress
-#      - WORDPRESS_HOME=${WP_SITE_URL:-https://client-default.hostinlink.com}
-#      - WORDPRESS_SITEURL=${WP_SITE_URL:-https://client-default.hostinlink.com}
-#    depends_on:
-#      - mysql
-#    healthcheck:
-#      test:
-#        - CMD
-#        - curl
-#        - '-f'
-#        - 'http://127.0.0.1'
-#      interval: 2s
-#      timeout: 10s
-#      retries: 10
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: '0.70'
-#          memory: 2048M
-#        reservations:
-#          memory: 512M
-    # 🔌 Enganchamos WordPress a ambas redes
-#    networks:
-#      - default
-#      - bunker-coolify
-
-#  mysql:
-#    image: 'mysql:8'
-#    volumes:
-#      - 'mysql-data:/var/lib/mysql'
-#    environment:
-#      - 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
-#      - MYSQL_DATABASE=wordpress
-#      - 'MYSQL_USER=${WP_DB_USER:-wp_default_user}'
-#      - 'MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
-#    healthcheck:
-#      test:
-#        - CMD
-#        - mysqladmin
-#        - ping
-#        - '-h'
-#        - 127.0.0.1
-#      interval: 5s
-#      timeout: 20s
-#      retries: 10
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: '0.30'
-#          memory: 1024M
-#        reservations:
-#          memory: 256M
-    # 🚨 LA JUGADA MAESTRA: Metemos la base de datos al túnel interno de Coolify
-#    networks:
-#      - default
-#      - bunker-coolify
-
-#volumes:
-#  wordpress-files: null
-#  mysql-data: null
-
 # =========================================================================
 # 🧠 ENLACE DE REDES EXTERNAS (CONEXIÓN ADUANA INFRAESTRUCTURA)
 # =========================================================================
-#networks:
-#  default:
-#  bunker-coolify:
-#    name: coolify # 🔑 ID EXACTO: El nombre de la red de Docker que descubriste en tu foto
-#    external: true # Le dice a Docker Compose que no cree una red, sino que use la global existente
+networks:
+  default:
+  bunker-coolify:
+    name: coolify # 🔑 ID EXACTO: El nombre de la red de Docker que descubriste en tu foto
+    external: true # Le dice a Docker Compose que no cree una red, sino que use la global existente
 
 
 
