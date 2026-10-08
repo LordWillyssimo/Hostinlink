@@ -21,7 +21,7 @@ services:
     # 🎯 AQUÍ ESTÁ LO QUE FALTA: Le decimos manualmente a Traefik cómo exponer WordPress
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wp-cliente-router.rule=Host(`://hostinlink.com`)" # Reemplaza con el dominio real
+      - "traefik.http.routers.wp-cliente-router.rule=Host(`wildo.hostinlink.com`)" # Reemplaza con el dominio real
       - "traefik.http.routers.wp-cliente-router.entrypoints=websecure"
       - "traefik.http.routers.wp-cliente-router.tls=true"
       - "traefik.http.routers.wp-cliente-router.tls.certresolver=letsencrypt" # O el resolver de Coolify
