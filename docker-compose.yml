@@ -30,16 +30,14 @@ services:
           memory: 2048M
         reservations:
           memory: 512M
-    # 🔌 Enganchamos WordPress a ambas redes
     networks:
       - default
       - bunker-coolify
-
   mysql:
     image: 'mysql:8'
     volumes:
       - 'mysql-data:/var/lib/mysql'
-    command: --bind-address=0.0.0.0
+    #command: --bind-address=0.0.0.0
     environment:
       - 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
       - MYSQL_DATABASE=wordpress
@@ -62,7 +60,6 @@ services:
           memory: 1024M
         reservations:
           memory: 256M
-    # 🚨 LA JUGADA MAESTRA: Metemos la base de datos al túnel interno de Coolify
     networks:
       - default
       - bunker-coolify
@@ -71,14 +68,11 @@ volumes:
   wordpress-files: null
   mysql-data: null
 
-# =========================================================================
-# 🧠 ENLACE DE REDES EXTERNAS (CONEXIÓN ADUANA INFRAESTRUCTURA)
-# =========================================================================
 networks:
   default:
   bunker-coolify:
-    name: coolify # 🔑 ID EXACTO: El nombre de la red de Docker que descubriste en tu foto
-    external: true # Le dice a Docker Compose que no cree una red, sino que use la global existente
+    name: coolify 
+    external: true 
 
 
 
