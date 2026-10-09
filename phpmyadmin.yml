@@ -6,10 +6,10 @@ services:
     container_name: hostinlink-pma-git # Nombre fijo para controlarlo
     environment:
       - PMA_ARBITRARY=1 # Te permite escribir el host manualmente
-    networks:
-      - bunker-coolify
+    #networks:
+    #  - bunker-coolify
 
-networks:
-  bunker-coolify:
-    name: coolify # El ID exacto de tu red predefinida
-    external: true # Le prohíbe a Docker crear una red nueva aislada
+#networks:
+#  bunker-coolify:
+#    name: coolify # El ID exacto de tu red predefinida
+#    external: true # Le prohíbe a Docker crear una red nueva aislada
