@@ -44,6 +44,8 @@ services:
       - MYSQL_DATABASE=wordpress
       - 'MYSQL_USER=${WP_DB_USER:-wp_default_user}'
       - 'MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
+    ports:
+      - '127.0.0.1:3306:3306'
     healthcheck:
       test:
         - CMD
