@@ -39,6 +39,8 @@ services:
     image: 'mysql:8'
     volumes:
       - 'mysql-data:/var/lib/mysql'
+     # 🌟 JUGADA MAESTRA: Forzamos a MySQL a escuchar e interactuar con redes IPv4 e IPv6 de Docker
+    command: --bind-address=0.0.0.0
     environment:
       - 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
       - MYSQL_DATABASE=wordpress
