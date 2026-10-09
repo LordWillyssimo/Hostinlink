@@ -48,8 +48,8 @@ services:
       #- 'MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
       - 'MYSQL_USER=12345'
       - 'MYSQL_PASSWORD=12345'
-    ports:
-      - '127.0.0.1:3306:3306'
+    #ports:
+    #  - '127.0.0.1:3306:3306'
     healthcheck:
       test:
         - CMD
