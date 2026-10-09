@@ -10,7 +10,7 @@ services:
       #- 'WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}'
       #- 'WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
       - WORDPRESS_DB_USER=12345
-      - WORDPRESS_DB_PASSWORD=
+      - WORDPRESS_DB_PASSWORD=12345
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_HOME=${WP_SITE_URL:-https://client-default.hostinlink.com}
       - WORDPRESS_SITEURL=${WP_SITE_URL:-https://client-default.hostinlink.com}
@@ -46,11 +46,12 @@ services:
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       #- 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
+      - MYSQL_ROOT_PASSWORD=root_super_secreto # 🔑 Siempre dale un root pass por estabilidad
       - MYSQL_DATABASE=wordpress
       #- 'MYSQL_USER=${WP_DB_USER:-wp_default_user}'
       #- 'MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
       - MYSQL_USER=12345
-      - MYSQL_PASSWORD=
+      - MYSQL_PASSWORD=12345
     #ports:
     #  - '127.0.0.1:3306:3306'
     healthcheck:
