@@ -213,21 +213,21 @@ networks:
 #        limits:
 #          cpus: '0.30'
 #          memory: 1024M
-        reservations:
-          memory: 256M
-    networks:
-      - default
-      - bunker-coolify
+#        reservations:
+#          memory: 256M
+#    networks:
+#      - default
+#      - bunker-coolify
 
-volumes:
-  wordpress-files: null
-  mysql-data: null
+#volumes:
+#  wordpress-files: null
+#  mysql-data: null
 
-networks:
-  default:
-  bunker-coolify:
-    name: coolify 
-    external: true 
+#networks:
+#  default:
+#  bunker-coolify:
+#    name: coolify 
+#    external: true 
 
 
 
