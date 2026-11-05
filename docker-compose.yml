@@ -10,8 +10,8 @@ services:
       - 'WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}'
       - 'WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
       - WORDPRESS_DB_NAME=wordpress
-      - WORDPRESS_HOME=${WP_SITE_URL:-https://client-default.hostinlink.com}
-      - WORDPRESS_SITEURL=${WP_SITE_URL:-https://client-default.hostinlink.com}
+      - WORDPRESS_HOME=${WP_SITE_URL:-https://hostinlink.com}
+      - WORDPRESS_SITEURL=${WP_SITE_URL:-https://hostinlink.com}
     depends_on:
       - mysql
     healthcheck:
@@ -20,24 +20,29 @@ services:
         - curl
         - '-f'
         - 'http://127.0.0.1'
-      interval: 2s
+      interval: 5s
       timeout: 10s
-      retries: 10
+      retries: 5
     deploy:
       resources:
         limits:
           cpus: '0.70'
-          memory: 2048M
+          # 🧠 Inyección dinámica del techo máximo que paga el usuario
+          memory: ${MPANEL_WP_LIMIT:-512M}
         reservations:
-          memory: 512M
+          cpus: '0.10'
+          # 💸 Tu ancla de Overselling: El VPS solo aparta esto físicamente
+          memory: 128M
     networks:
       - default
       - bunker-coolify
+
   mysql:
     image: 'mysql:8'
     volumes:
       - 'mysql-data:/var/lib/mysql'
-    #command: --bind-address=0.0.0.0
+    # 🧠 Limitamos el Buffer Pool interno para que MySQL respire holgadamente dentro de sus límites de Docker
+    command: --innodb-buffer-pool-size=128M --innodb-log-buffer-size=16M --max-connections=50
     environment:
       - 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
       - MYSQL_DATABASE=wordpress
@@ -52,12 +57,162 @@ services:
         - 127.0.0.1
       interval: 5s
       timeout: 20s
-      retries: 10
+      retries: 5
     deploy:
       resources:
         limits:
           cpus: '0.30'
-          memory: 1024M
+          # 🧠 Inyección dinámica del techo máximo de la Base de Datos
+          memory: ${MPANEL_DB_LIMIT:-512M}
+        reservations:
+          cpus: '0.05'
+          # 💸 Tu segunda ancla de Overselling
+          memory: 128M
+    networks:
+      - default
+      - bunker-coolify
+
+volumes:
+  wordpress-files: null
+  mysql-data: null
+
+networks:
+  default:
+  bunker-coolify:
+    name: coolify 
+    external: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#version: '3.8'
+
+#services:
+#  wordpress:
+#    image: 'wordpress:latest'
+#    volumes:
+#      - 'wordpress-files:/var/www/html'
+#    environment:
+#      - WORDPRESS_DB_HOST=mysql
+#      - 'WORDPRESS_DB_USER=${WP_DB_USER:-wp_default_user}'
+#      - 'WORDPRESS_DB_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
+#      - WORDPRESS_DB_NAME=wordpress
+#      - WORDPRESS_HOME=${WP_SITE_URL:-https://client-default.hostinlink.com}
+#      - WORDPRESS_SITEURL=${WP_SITE_URL:-https://client-default.hostinlink.com}
+#    depends_on:
+#      - mysql
+#    healthcheck:
+#      test:
+#        - CMD
+#        - curl
+#        - '-f'
+#        - 'http://127.0.0.1'
+#      interval: 2s
+#      timeout: 10s
+#      retries: 10
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.70'
+#          memory: 2048M
+#        reservations:
+#          memory: 512M
+#    networks:
+#      - default
+#      - bunker-coolify
+#  mysql:
+#    image: 'mysql:8'
+#    volumes:
+#      - 'mysql-data:/var/lib/mysql'
+
+      
+    #command: --bind-address=0.0.0.0
+    
+    
+#    environment:
+#      - 'MYSQL_ROOT_PASSWORD=${WP_DB_ROOT_PASSWORD:-root_default_pass}'
+#      - MYSQL_DATABASE=wordpress
+#      - 'MYSQL_USER=${WP_DB_USER:-wp_default_user}'
+#      - 'MYSQL_PASSWORD=${WP_DB_PASSWORD:-wp_default_pass}'
+#    healthcheck:
+#      test:
+#        - CMD
+#        - mysqladmin
+#        - ping
+#        - '-h'
+#        - 127.0.0.1
+#      interval: 5s
+#      timeout: 20s
+#      retries: 10
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.30'
+#          memory: 1024M
         reservations:
           memory: 256M
     networks:
